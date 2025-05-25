@@ -59,9 +59,9 @@ def create_templates(input_dir, output_dir):
 
         try:
             subprocess.run(cmd, check=True)
-            print(f"✅ {subject}: Template created successfully")
+            print(f"{subject}: Template created successfully")
         except subprocess.CalledProcessError as e:
-            print(f"❌ {subject}: Template creation failed - {e}")
+            print(f"{subject}: Template creation failed - {e}")
 
 def run_samseg(output_dir, num_threads):
     """
@@ -87,7 +87,7 @@ def run_samseg(output_dir, num_threads):
         ])
 
         if not registered_images:
-            print(f"⚠️ {subject}: No registered images found, skipping SAMSEG")
+            print(f"{subject}: No registered images found, skipping SAMSEG")
             continue
 
         # Build timepoint arguments
@@ -105,9 +105,9 @@ def run_samseg(output_dir, num_threads):
 
         try:
             subprocess.run(cmd, check=True)
-            print(f"✅ {subject}: SAMSEG longitudinal completed")
+            print(f"{subject}: SAMSEG longitudinal completed")
         except subprocess.CalledProcessError as e:
-            print(f"❌ {subject}: SAMSEG failed - {e}")
+            print(f"{subject}: SAMSEG failed - {e}")
 
 def invert_segmentations(input_dir, output_dir, inverted_dir):
     """
@@ -126,7 +126,7 @@ def invert_segmentations(input_dir, output_dir, inverted_dir):
         lta_dir = os.path.join(subj_output, "lta")
 
         if not os.path.exists(lta_dir):
-            print(f"⚠️ {subject}: LTA directory missing, skipping inversion")
+            print(f"{subject}: LTA directory missing, skipping inversion")
             continue
 
         # Collect original images and LTAs
@@ -149,14 +149,14 @@ def invert_segmentations(input_dir, output_dir, inverted_dir):
 
         # Validation
         if len(original_images) != len(lta_files) or len(original_images) != len(tp_folders):
-            print(f"❌ {subject}: Data mismatch, cannot invert")
+            print(f"{subject}: Data mismatch, cannot invert")
             continue
 
         # Process each timepoint
         for t1_path, lta_path, tp_folder in zip(original_images, lta_files, tp_folders):
             seg_path = os.path.join(subj_output, tp_folder, "seg.mgz")
             if not os.path.exists(seg_path):
-                print(f"⚠️ {subject} {tp_folder}: Missing seg.mgz, skipping")
+                print(f"{subject} {tp_folder}: Missing seg.mgz, skipping")
                 continue
 
             # Create BIDS-compatible output path
@@ -184,9 +184,9 @@ def invert_segmentations(input_dir, output_dir, inverted_dir):
 
             try:
                 subprocess.run(cmd, check=True)
-                print(f"✅ {subject} {tp_folder}: Inversion successful")
+                print(f"{subject} {tp_folder}: Inversion successful")
             except subprocess.CalledProcessError as e:
-                print(f"❌ {subject} {tp_folder}: Inversion failed - {e}")
+                print(f"{subject} {tp_folder}: Inversion failed - {e}")
 
 def process_stats_measures(input_dir, output_dir):
     """
@@ -219,7 +219,7 @@ def process_stats_measures(input_dir, output_dir):
                                     measures[measure_name] = float(parts[1])
 
             except Exception as e:
-                print(f"⚠️ Error processing {row['Label']}: {str(e)}")
+                print(f"Error processing {row['Label']}: {str(e)}")
             return pd.Series(measures)
 
         # Add measures to DataFrame
@@ -231,12 +231,12 @@ def process_stats_measures(input_dir, output_dir):
         
         # Save result
         df[original_columns + new_columns].to_csv(output_tsv, sep='\t', index=False, float_format='%.6f')
-        print(f"✅ Measures TSV generated: {output_tsv}")
+        print(f"Measures TSV generated: {output_tsv}")
         
         return output_tsv
 
     except Exception as e:
-        print(f"❌ Error processing statistics: {str(e)}")
+        print(f"Error processing statistics: {str(e)}")
         return None
 
 def generate_baseline_tsv(measures_tsv, output_dir):
@@ -254,10 +254,10 @@ def generate_baseline_tsv(measures_tsv, output_dir):
         df_filtered.drop(columns=['run'], inplace=True)
         
         df_filtered.to_csv(baseline_tsv, sep='\t', index=False)
-        print(f"✅ Baseline TSV generated: {baseline_tsv}")
+        print(f"Baseline TSV generated: {baseline_tsv}")
 
     except Exception as e:
-        print(f"❌ Error generating baseline: {str(e)}")
+        print(f"Error generating baseline: {str(e)}")
 
 def main():
     parser = argparse.ArgumentParser(description="Complete SAMSEG Longitudinal Pipeline")

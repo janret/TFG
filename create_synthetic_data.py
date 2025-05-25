@@ -173,7 +173,7 @@ def process_all_data(samseg_dir, output_root, num_transforms=10, split=False):
                              key=lambda x: int(x[2:]))
 
             if len(mri_files) != len(tp_folders):
-                print(f"❌ {sub}: MRIs ({len(mri_files)}) ≠ Timepoints ({len(tp_folders)})")
+                print(f"{sub}: MRIs ({len(mri_files)}) ≠ Timepoints ({len(tp_folders)})")
                 continue
 
             for mri_file, tp_folder in zip(mri_files, tp_folders):
@@ -185,7 +185,7 @@ def process_all_data(samseg_dir, output_root, num_transforms=10, split=False):
                 seg_path = os.path.join(sub_dir, tp_folder, 'seg.mgz')
 
                 if not os.path.exists(seg_path):
-                    print(f"❌ Segmentation not found: {seg_path}")
+                    print(f"Segmentation not found: {seg_path}")
                     continue
 
                 apply_transformations(synthetic_sub_id, mri_path, seg_path, output_dir, num_transforms)
