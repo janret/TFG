@@ -147,24 +147,84 @@ Script: `run_samseg_long.py`
 
 ### 4. Participant File Generation
 Script: `synthseg_generate_participants_file.py`
-- **Purpose**: Generates participant information files for SynthSeg processing
-- **Usage**:
+- **Purpose**: Generates and processes participant information files by combining volumetric brain data from SynthSeg with clinical metadata in BIDS format
+- **Key Features**:
+  - Loads and combines SynthSeg volumetric outputs
+  - Merges volumetric data with clinical metadata
+  - Creates baseline datasets for cross-sectional analysis
+  - Handles multiple timepoints and run numbers
+  - Generates standardized TSV files
+- **Required Arguments**:
+  - `--rawdata`: Path to BIDS rawdata directory containing participants_time.tsv
+  - `--derivatives`: Path to derivatives directory containing SynthSeg outputs
+- **Output Files**:
+  1. `participants.tsv`: Combined dataset with all timepoints
+     - Contains clinical metadata
+     - Includes volumetric measurements
+     - Preserves temporal information
+  2. `participants_baseline.tsv`: Dataset with only baseline measurements
+     - Filtered for time = 0
+     - One entry per subject (first run)
+     - Useful for cross-sectional analysis
+- **Example Usage**:
   ```bash
-  python synthseg_generate_participants_file.py [options]
+  python synthseg_generate_participants_file.py \
+    --rawdata /path/to/bids/rawdata \
+    --derivatives /path/to/synthseg/output
   ```
-- **Note**: Additional documentation needed for specific options and parameters
+- **Processing Steps**:
+  1. Loads all SynthSeg CSV files from derivatives directory
+  2. Combines volumetric measurements into a single dataset
+  3. Merges with clinical metadata from participants_time.tsv
+  4. Creates a separate baseline dataset
+  5. Saves both complete and baseline datasets
 
 ### 5. Temporal Processing Visualization
 Script: `visualitza_tps.sh`
-- **Purpose**: Shell script for visualizing temporal processing steps
-- **Features**:
-  - Visualizes longitudinal changes
-  - Supports multiple visualization modes
-- **Usage**:
-  ```bash
-  ./visualitza_tps.sh [parameters]
+- **Purpose**: Shell script for visualizing temporal processing steps using FreeSurfer's FreeView tool
+- **Key Features**:
+  - Interactive visualization of longitudinal brain scans
+  - Side-by-side comparison of timepoints
+  - Overlay segmentation maps
+  - Coronal view layout
+  - Template comparison
+- **Required Arguments**:
+  - `-d <subject_directory>`: Directory containing the subject's timepoint data
+  - `-t <num_timepoints>`: Number of timepoints to visualize
+- **Expected File Structure**:
   ```
-- **Note**: Additional documentation needed for specific parameters and visualization modes
+  subject_directory/
+  ├── sub-001_template.mgz           # Template MRI
+  ├── sub-001_template_seg.mgz       # Template segmentation
+  ├── sub-001_tp001.mgz             # Timepoint 1 MRI
+  ├── sub-001_tp001_seg.mgz         # Timepoint 1 segmentation
+  ├── sub-001_tp002.mgz             # Timepoint 2 MRI
+  ├── sub-001_tp002_seg.mgz         # Timepoint 2 segmentation
+  └── ...
+  ```
+- **Visualization Features**:
+  - Two-panel layout (coronal view)
+  - Template image display
+  - Segmentation overlay with 50% opacity
+  - Color-coded segmentation maps
+  - Interactive navigation
+- **Example Usage**:
+  ```bash
+  # Basic usage
+  ./visualitza_tps.sh -d /path/to/subject -t 15
+
+  # Display help
+  ./visualitza_tps.sh -h
+  ```
+- **Requirements**:
+  - FreeSurfer installation
+  - FreeView tool available in PATH
+  - X11 display server (for GUI)
+- **Controls in FreeView**:
+  - Mouse wheel: Zoom in/out
+  - Left click + drag: Pan
+  - Right click + drag: Adjust contrast
+  - Middle click + drag: Navigate through slices
 
 ## Note
 
