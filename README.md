@@ -2,6 +2,26 @@
 
 This repository contains the code for the TFG project, focusing on neuroimaging data processing and analysis. Below you'll find instructions on how to set up the development environment and run the code.
 
+## Repository Structure
+```
+TFG/
+├── simple_u_net/           # U-Net implementation for segmentation
+│   ├── Model.py           # U-Net model architecture
+│   ├── DataLoader.py      # Data loading and preprocessing
+│   ├── train.py          # Training script
+│   ├── test.py           # Testing script
+│   ├── predict.py        # Prediction script
+│   └── best_model.h5     # Pre-trained model weights
+├── create_synthetic_data.py
+├── from_miriad_to_bids.py
+├── run_samseg_long.py
+├── synthseg_generate_participants_file.py
+├── visualitza_tps.sh
+├── divide_rawdata.py
+├── requirements.txt
+└── README.md
+```
+
 ## Prerequisites
 
 ### FreeSurfer
@@ -48,6 +68,8 @@ The project uses several key packages including:
 - Scikit-learn (1.6.1)
 - SimpleITK (2.5.0)
 - TorchIO (0.20.8)
+- Nibabel (5.3.2)
+- SciPy (1.15.3)
 
 For a complete list of dependencies and their versions, see `requirements.txt`.
 
@@ -256,6 +278,43 @@ Script: `divide_rawdata.py`
   3. Copies subject directories for test subjects
   4. Processes and filters TSV files to include only test subjects
   5. Maintains all metadata and file organization
+
+### 7. U-Net Segmentation Model
+Directory: `simple_u_net/`
+- **Purpose**: Implements a U-Net architecture for brain MRI segmentation
+- **Components**:
+  - `Model.py`: U-Net model architecture implementation
+  - `DataLoader.py`: Data loading and preprocessing utilities
+  - `train.py`: Training script with configuration options
+  - `test.py`: Model evaluation script
+  - `predict.py`: Inference script for new images
+  - `best_model.h5`: Pre-trained model weights
+- **Key Features**:
+  - Custom U-Net implementation for 3D brain MRI
+  - Efficient data loading and preprocessing
+  - Training with various loss functions
+  - Model evaluation metrics
+  - Easy-to-use prediction interface
+- **Example Usage**:
+  ```bash
+  # Training
+  python simple_u_net/train.py \
+    --data_dir /path/to/training/data \
+    --epochs 100 \
+    --batch_size 8 \
+    --learning_rate 0.001
+
+  # Testing
+  python simple_u_net/test.py \
+    --model_path simple_u_net/best_model.h5 \
+    --test_data /path/to/test/data
+
+  # Prediction
+  python simple_u_net/predict.py \
+    --input_image /path/to/input.nii \
+    --output_mask /path/to/output.nii \
+    --model_path simple_u_net/best_model.h5
+  ```
 
 ## Note
 
