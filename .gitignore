@@ -41,4 +41,4 @@ ENV/
 
 # Temporary files
 *.log
-.DS_Store 
+.DS_Store simple_u_net/best_model.h5
