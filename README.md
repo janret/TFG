@@ -226,6 +226,37 @@ Script: `visualitza_tps.sh`
   - Right click + drag: Adjust contrast
   - Middle click + drag: Navigate through slices
 
+### 6. Data Division for Testing
+Script: `divide_rawdata.py`
+- **Purpose**: Divides raw data into training and test sets by copying specified test subjects to a separate directory
+- **Key Features**:
+  - Copies subject data while preserving directory structure
+  - Processes and filters TSV files to include only test subjects
+  - Maintains data organization and metadata
+  - Verbose output option for debugging
+- **Required Arguments**:
+  - `-t, --test-subjects-file`: Path to file containing test subject IDs
+  - `-s, --source-dir`: Source directory containing the raw data
+  - `-o, --target-dir`: Target directory where test data will be copied
+- **Optional Arguments**:
+  - `-v, --verbose`: Enable verbose output for detailed processing information
+- **Example Usage**:
+  ```bash
+  python divide_rawdata.py \
+    --test-subjects-file /path/to/test_subjects.txt \
+    --source-dir /path/to/rawdata \
+    --target-dir /path/to/rawdata_test \
+    --verbose
+  ```
+- **Input File Format**:
+  - `test_subjects.txt`: Text file with one subject ID per line
+- **Processing Steps**:
+  1. Reads list of test subjects from input file
+  2. Creates target directory structure
+  3. Copies subject directories for test subjects
+  4. Processes and filters TSV files to include only test subjects
+  5. Maintains all metadata and file organization
+
 ## Note
 
 - Ensure Python and FreeSurfer 7.4.1 are properly installed and configured
