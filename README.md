@@ -1,6 +1,6 @@
 # TFG Project
 
-This repository contains the code for the TFG project, focusing on neuroimaging data processing and analysis. Below you'll find instructions on how to set up the development environment and run the code.
+This repository contains the code for the TFG project, focusing on neuroimaging data processing and analysis using deep learning and traditional methods. Below you'll find instructions on how to set up the development environment and run the code.
 
 ## Repository Structure
 ```
@@ -12,14 +12,14 @@ TFG/
 │   ├── test.py           # Testing script
 │   ├── predict.py        # Prediction script
 │   └── best_model.h5     # Pre-trained model weights
-├── create_synthetic_data.py
-├── from_miriad_to_bids.py
-├── run_samseg_long.py
-├── synthseg_generate_participants_file.py
-├── visualitza_tps.sh
-├── divide_rawdata.py
-├── requirements.txt
-└── README.md
+├── create_synthetic_data.py          # Generate synthetic data for training
+├── from_miriad_to_bids.py           # Convert MIRIAD format to BIDS
+├── run_samseg_long.py               # Run longitudinal SAMSEG processing
+├── synthseg_generate_participants_file.py  # Generate participant information
+├── visualitza_tps.sh                # Visualize temporal processing steps
+├── divide_rawdata.py                # Split data into train/test sets
+├── requirements.txt                 # Python dependencies
+└── README.md                        # This file
 ```
 
 ## Prerequisites
@@ -39,17 +39,17 @@ TFG/
 
 1. Create a new virtual environment:
 ```bash
-python -m venv tf
+python -m venv tfg_env
 ```
 
 2. Activate the virtual environment:
 - On Linux/Mac:
   ```bash
-  source tf/bin/activate
+  source tfg_env/bin/activate
   ```
 - On Windows:
   ```bash
-  .\tf\Scripts\activate
+  .\tfg_env\Scripts\activate
   ```
 
 3. Install the required packages:
@@ -60,275 +60,157 @@ pip install -r requirements.txt
 ## Required Packages
 
 The project uses several key packages including:
-- TensorFlow (2.19.0)
-- PyTorch (2.7.0)
-- NumPy (2.1.3)
-- Matplotlib (3.10.3)
-- Pandas (2.2.3)
-- Scikit-learn (1.6.1)
-- SimpleITK (2.5.0)
-- TorchIO (0.20.8)
-- Nibabel (5.3.2)
-- SciPy (1.15.3)
+- TensorFlow (2.13.0)
+- NumPy (1.24.3)
+- Matplotlib (3.7.1)
+- Pandas (2.0.3)
+- Scikit-learn (1.3.0)
+- SimpleITK (2.2.1)
+- Nibabel (5.1.0)
+- SciPy (1.11.2)
 
 For a complete list of dependencies and their versions, see `requirements.txt`.
 
 ## Scripts and Usage
 
-### 1. Synthetic Data Generation
-Script: `create_synthetic_data.py`
-- **Purpose**: Generates synthetic neuroimaging data for testing and validation by applying transformations to existing MRI scans
-- **Key Features**:
-  - Generates multiple synthetic timepoints from a single MRI scan
-  - Applies random affine and elastic deformations
-  - Supports data splitting into train/validation/test sets
-  - Processes both MRI images and their segmentations
-- **Required Arguments**:
-  - `--input_dir`: Directory containing original SAMSEG data
-  - `--synthetic_dir`: Output directory for synthetic data
-- **Optional Arguments**:
-  - `--preprocessed_dir`: Directory for preprocessed data (default: /tmp/preprocessed)
-  - `--num_transforms`: Number of synthetic timepoints to generate (default: 10)
-  - `--voxel_size`: Target voxel size for preprocessing
-  - `--split`: Enable train/val/test splitting (80/15/5 split)
-- **Example Usage**:
-  ```bash
-  python create_synthetic_data.py \
-    --input_dir /path/to/samseg/data \
-    --synthetic_dir /path/to/output \
-    --num_transforms 15 \
-    --voxel_size 1.0 \
-    --split
-  ```
+### 1. Synthetic Data Generation (`create_synthetic_data.py`)
+Generate synthetic neuroimaging data for testing and validation.
 
-### 2. MIRIAD to BIDS Conversion
-Script: `from_miriad_to_bids.py`
-- **Purpose**: Converts neuroimaging data from MIRIAD format to BIDS (Brain Imaging Data Structure) format
-- **Key Features**:
-  - Organizes data according to BIDS specification
-  - Generates required metadata files
-  - Creates longitudinal time information
-  - Sets up derivatives directory structure
-- **Required Arguments**:
-  - `--input_dir`: Source directory of MIRIAD dataset
-  - `--output_dir`: Root directory for output (rawdata and derivatives)
-  - `--csv_file`: Path to metadata CSV file
-- **Output Structure**:
-  ```
-  output_dir/
-  ├── rawdata/
-  │   ├── sub-<id>/
-  │   │   ├── ses-<session>/
-  │   │   │   └── anat/
-  │   │   │       └── sub-<id>_ses-<session>_run-<run>_T1w.nii
-  │   │   └── time.tsv
-  │   ├── participants.tsv
-  │   ├── participants_time.tsv
-  │   └── dataset_description.json
-  └── derivatives/
-      └── synthseg/
-  ```
-- **Example Usage**:
-  ```bash
-  python from_miriad_to_bids.py \
-    --input_dir /path/to/miriad/data \
-    --output_dir /path/to/bids/output \
-    --csv_file /path/to/metadata.csv
-  ```
+**Features**:
+- Creates multiple synthetic timepoints from single MRI scans
+- Applies random affine and elastic deformations
+- Supports train/validation/test splitting
 
-### 3. Longitudinal Segmentation
-Script: `run_samseg_long.py`
-- **Purpose**: Implements longitudinal segmentation using FreeSurfer's SAMSEG algorithm
-- **Key Features**:
-  - Creates robust templates for each subject
-  - Runs longitudinal SAMSEG processing
-  - Inverts segmentations back to original space
-  - Processes statistical measures
-- **Steps**:
-  1. Template Creation: Generates robust mean template from all timepoints
-  2. SAMSEG Processing: Runs longitudinal segmentation
-  3. Inversion: Maps segmentations back to original space
-  4. Stats Processing: Extracts and compiles volume measurements
-- **Required Environment**:
-  - FreeSurfer 7.4.1
-  - Properly set FREESURFER_HOME
-  - Valid FreeSurfer license
-- **Arguments**:
-  - `--input_dir`: Directory with BIDS-formatted input data
-  - `--output_dir`: Directory for SAMSEG output
-  - `--inverted_dir`: Directory for inverted segmentations
-  - `--threads`: Number of threads for processing (default: 1)
-- **Example Usage**:
-  ```bash
-  python run_samseg_long.py \
-    --input_dir /path/to/bids/data \
-    --output_dir /path/to/samseg/output \
-    --inverted_dir /path/to/inverted/output \
-    --threads 4
-  ```
+**Usage**:
+```bash
+python create_synthetic_data.py \
+  --input_dir /path/to/samseg/data \
+  --synthetic_dir /path/to/output \
+  --num_transforms 15 \
+  --voxel_size 1.0 \
+  --split
+```
 
-### 4. Participant File Generation
-Script: `synthseg_generate_participants_file.py`
-- **Purpose**: Generates and processes participant information files by combining volumetric brain data from SynthSeg with clinical metadata in BIDS format
-- **Key Features**:
-  - Loads and combines SynthSeg volumetric outputs
-  - Merges volumetric data with clinical metadata
-  - Creates baseline datasets for cross-sectional analysis
-  - Handles multiple timepoints and run numbers
-  - Generates standardized TSV files
-- **Required Arguments**:
-  - `--rawdata`: Path to BIDS rawdata directory containing participants_time.tsv
-  - `--derivatives`: Path to derivatives directory containing SynthSeg outputs
-- **Output Files**:
-  1. `participants.tsv`: Combined dataset with all timepoints
-     - Contains clinical metadata
-     - Includes volumetric measurements
-     - Preserves temporal information
-  2. `participants_baseline.tsv`: Dataset with only baseline measurements
-     - Filtered for time = 0
-     - One entry per subject (first run)
-     - Useful for cross-sectional analysis
-- **Example Usage**:
-  ```bash
-  python synthseg_generate_participants_file.py \
-    --rawdata /path/to/bids/rawdata \
-    --derivatives /path/to/synthseg/output
-  ```
-- **Processing Steps**:
-  1. Loads all SynthSeg CSV files from derivatives directory
-  2. Combines volumetric measurements into a single dataset
-  3. Merges with clinical metadata from participants_time.tsv
-  4. Creates a separate baseline dataset
-  5. Saves both complete and baseline datasets
+### 2. MIRIAD to BIDS Conversion (`from_miriad_to_bids.py`)
+Convert neuroimaging data from MIRIAD format to BIDS format.
 
-### 5. Temporal Processing Visualization
-Script: `visualitza_tps.sh`
-- **Purpose**: Shell script for visualizing temporal processing steps using FreeSurfer's FreeView tool
-- **Key Features**:
-  - Interactive visualization of longitudinal brain scans
-  - Side-by-side comparison of timepoints
-  - Overlay segmentation maps
-  - Coronal view layout
-  - Template comparison
-- **Required Arguments**:
-  - `-d <subject_directory>`: Directory containing the subject's timepoint data
-  - `-t <num_timepoints>`: Number of timepoints to visualize
-- **Expected File Structure**:
-  ```
-  subject_directory/
-  ├── sub-001_template.mgz           # Template MRI
-  ├── sub-001_template_seg.mgz       # Template segmentation
-  ├── sub-001_tp001.mgz             # Timepoint 1 MRI
-  ├── sub-001_tp001_seg.mgz         # Timepoint 1 segmentation
-  ├── sub-001_tp002.mgz             # Timepoint 2 MRI
-  ├── sub-001_tp002_seg.mgz         # Timepoint 2 segmentation
-  └── ...
-  ```
-- **Visualization Features**:
-  - Two-panel layout (coronal view)
-  - Template image display
-  - Segmentation overlay with 50% opacity
-  - Color-coded segmentation maps
-  - Interactive navigation
-- **Example Usage**:
-  ```bash
-  # Basic usage
-  ./visualitza_tps.sh -d /path/to/subject -t 15
+**Features**:
+- Organizes data according to BIDS specification
+- Generates required metadata files
+- Creates longitudinal time information
 
-  # Display help
-  ./visualitza_tps.sh -h
-  ```
-- **Requirements**:
-  - FreeSurfer installation
-  - FreeView tool available in PATH
-  - X11 display server (for GUI)
-- **Controls in FreeView**:
-  - Mouse wheel: Zoom in/out
-  - Left click + drag: Pan
-  - Right click + drag: Adjust contrast
-  - Middle click + drag: Navigate through slices
+**Usage**:
+```bash
+python from_miriad_to_bids.py \
+  --input_dir /path/to/miriad/data \
+  --output_dir /path/to/bids/output \
+  --csv_file /path/to/metadata.csv
+```
 
-### 6. Data Division for Testing
-Script: `divide_rawdata.py`
-- **Purpose**: Divides raw data into training and test sets by copying specified test subjects to a separate directory
-- **Key Features**:
-  - Copies subject data while preserving directory structure
-  - Processes and filters TSV files to include only test subjects
-  - Maintains data organization and metadata
-  - Verbose output option for debugging
-- **Required Arguments**:
-  - `-t, --test-subjects-file`: Path to file containing test subject IDs
-  - `-s, --source-dir`: Source directory containing the raw data
-  - `-o, --target-dir`: Target directory where test data will be copied
-- **Optional Arguments**:
-  - `-v, --verbose`: Enable verbose output for detailed processing information
-- **Example Usage**:
-  ```bash
-  python divide_rawdata.py \
-    --test-subjects-file /path/to/test_subjects.txt \
-    --source-dir /path/to/rawdata \
-    --target-dir /path/to/rawdata_test \
-    --verbose
-  ```
-- **Input File Format**:
-  - `test_subjects.txt`: Text file with one subject ID per line
-- **Processing Steps**:
-  1. Reads list of test subjects from input file
-  2. Creates target directory structure
-  3. Copies subject directories for test subjects
-  4. Processes and filters TSV files to include only test subjects
-  5. Maintains all metadata and file organization
+### 3. Longitudinal Segmentation (`run_samseg_long.py`)
+Process longitudinal brain MRI data using FreeSurfer's SAMSEG algorithm.
 
-### 7. U-Net Segmentation Model
-Directory: `simple_u_net/`
-- **Purpose**: Implements a U-Net architecture for brain MRI segmentation
-- **Components**:
-  - `Model.py`: U-Net model architecture implementation
-  - `DataLoader.py`: Data loading and preprocessing utilities
-  - `train.py`: Training script with configuration options
-  - `test.py`: Model evaluation script
-  - `predict.py`: Inference script for new images
-  - `best_model.h5`: Pre-trained model weights
-- **Key Features**:
-  - Custom U-Net implementation for 3D brain MRI
-  - Efficient data loading and preprocessing
-  - Training with various loss functions
-  - Model evaluation metrics
-  - Easy-to-use prediction interface
-- **Example Usage**:
-  ```bash
-  # Training
-  python simple_u_net/train.py \
-    --data_dir /path/to/training/data \
-    --epochs 100 \
-    --batch_size 8 \
-    --learning_rate 0.001
+**Features**:
+- Creates subject-specific templates
+- Runs longitudinal SAMSEG processing
+- Generates volume measurements
 
-  # Testing
-  python simple_u_net/test.py \
-    --model_path simple_u_net/best_model.h5 \
-    --test_data /path/to/test/data
+**Usage**:
+```bash
+python run_samseg_long.py \
+  --input_dir /path/to/bids/data \
+  --output_dir /path/to/samseg/output \
+  --inverted_dir /path/to/inverted/output \
+  --threads 4
+```
 
-  # Prediction
-  python simple_u_net/predict.py \
-    --input_image /path/to/input.nii \
-    --output_mask /path/to/output.nii \
-    --model_path simple_u_net/best_model.h5
-  ```
+### 4. Participant File Generation (`synthseg_generate_participants_file.py`)
+Generate participant information files combining volumetric and clinical data.
 
-## Note
+**Features**:
+- Combines SynthSeg volumetric outputs with clinical metadata
+- Creates baseline datasets for cross-sectional analysis
+- Generates standardized TSV files
 
-- Ensure Python and FreeSurfer 7.4.1 are properly installed and configured
-- Always activate your virtual environment before running the scripts
-- Make sure all required environment variables are set
-- For detailed options and parameters for each script, run with `-h` or `--help` flag
+**Usage**:
+```bash
+python synthseg_generate_participants_file.py \
+  --rawdata /path/to/bids/rawdata \
+  --derivatives /path/to/synthseg/output
+```
+
+### 5. Temporal Processing Visualization (`visualitza_tps.sh`)
+Visualize temporal processing steps using FreeSurfer's FreeView tool.
+
+**Features**:
+- Interactive visualization of longitudinal scans
+- Side-by-side comparison of timepoints
+- Segmentation overlay support
+
+**Usage**:
+```bash
+./visualitza_tps.sh -d /path/to/subject -t 15
+```
+
+### 6. Data Division (`divide_rawdata.py`)
+Split data into training and test sets.
+
+**Features**:
+- Preserves directory structure
+- Processes metadata files
+- Maintains data organization
+
+**Usage**:
+```bash
+python divide_rawdata.py \
+  --test-subjects-file /path/to/test_subjects.txt \
+  --source-dir /path/to/rawdata \
+  --target-dir /path/to/rawdata_test
+```
+
+### 7. U-Net Segmentation Model (`simple_u_net/`)
+Deep learning model for brain MRI segmentation.
+
+**Components**:
+- Model architecture (`Model.py`)
+- Data loading utilities (`DataLoader.py`)
+- Training and evaluation scripts
+- Pre-trained weights
+
+**Usage**:
+```bash
+# Training
+python simple_u_net/train.py \
+  --data_dir /path/to/training/data \
+  --epochs 100 \
+  --batch_size 8 \
+  --learning_rate 0.001
+
+# Prediction
+python simple_u_net/predict.py \
+  --input_image /path/to/input.nii \
+  --output_mask /path/to/output.nii \
+  --model_path simple_u_net/best_model.h5
+```
 
 ## Troubleshooting
 
-If you encounter any issues:
-1. Verify FreeSurfer 7.4.1 is properly installed and configured
-2. Ensure all environment variables are set correctly
-3. Check that your virtual environment is activated
-4. Verify all dependencies are installed correctly
+1. Verify FreeSurfer 7.4.1 installation:
+   ```bash
+   echo $FREESURFER_HOME
+   which freeview
+   ```
 
-For specific script issues, refer to the error messages or contact the repository maintainers.
+2. Check Python environment:
+   ```bash
+   python --version
+   pip list
+   ```
+
+3. Common issues:
+   - FreeSurfer license missing
+   - Incorrect environment variables
+   - Missing dependencies
+   - Insufficient disk space for synthetic data
+
+For specific issues, check error messages or create an issue in the repository.
