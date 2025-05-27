@@ -30,7 +30,7 @@ TFG/
   1. Download FreeSurfer 7.4.1 from [FreeSurfer website](https://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall)
   2. Set up FreeSurfer environment variables in your `.bashrc` or `.bash_profile`:
      ```bash
-     export FREESURFER_HOME=/path/to/freesurfer
+     export FREESURFER_HOME=/path/to/freesurfer/7.4.1
      source $FREESURFER_HOME/SetUpFreeSurfer.sh
      ```
   3. Make sure you have a valid FreeSurfer license file installed
