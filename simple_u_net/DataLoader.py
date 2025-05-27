@@ -161,8 +161,40 @@ class BIDSPredictGenerator(SimplePredictGenerator):
         for root, _, files in os.walk(reg_dir):
             for f in files:
                 if f.endswith('_T1w_reg.mgz'):
-                    orig = f.replace('_T1w_reg.mgz', '_T1w.nii')
-                    samples.append({'original_path': os.path.join(root, orig), 'registered_path': os.path.join(root, f)})
+                    # Extract BIDS components from filename
+                    parts = f.split('_')
+                    sub_id = next((p for p in parts if p.startswith('sub-')), None)
+                    ses_id = next((p for p in parts if p.startswith('ses-')), None)
+                    run_id = next((p for p in parts if p.startswith('run-')), None)
+                    
+                    if not all([sub_id, ses_id]):  # We need at least subject and session
+                        continue
+                        
+                    # Construct path to original file
+                    orig_name = f.replace('_T1w_reg.mgz', '_T1w.nii')
+                    orig_path = os.path.join(
+                        self.base_dir,
+                        sub_id,
+                        ses_id,
+                        'anat',
+                        orig_name
+                    )
+                    
+                    # Check for .nii.gz as well
+                    if not os.path.exists(orig_path):
+                        orig_path = orig_path + '.gz'
+                    
+                    if os.path.exists(orig_path):
+                        samples.append({
+                            'original_path': orig_path,
+                            'registered_path': os.path.join(root, f)
+                        })
+                        
+        if not samples:
+            print("Warning: No matching files found between registered directory and input directory")
+            print(f"Registered dir: {reg_dir}")
+            print(f"Input dir: {self.base_dir}")
+            
         return samples
 
     def _process_longitudinal_data(self):
