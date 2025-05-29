@@ -18,6 +18,12 @@ TFG/
 │   ├── train.py          # Training script
 │   ├── test.py           # Testing script
 │   └── predict.py        # Prediction script
+├── results_analysis/     # Scripts for analyzing segmentation results
+│   ├── 1_merge_participants_volumes.py  # Merge participant data with volume measurements
+│   ├── 2_ols.py                        # Ordinary Least Squares analysis
+│   ├── 3_longitudinal_analysis.py      # Longitudinal data analysis
+│   ├── 4_aspc.py                       # Annualized Symmetric Percentage Change analysis
+│   └── 5_apc.py                        # Annual Percentage Change analysis
 ├── create_synthetic_data.py          # Generate synthetic data for training
 ├── from_miriad_to_bids.py           # Convert MIRIAD format to BIDS
 ├── run_samseg_long.py               # Run longitudinal SAMSEG processing
@@ -225,6 +231,92 @@ python dual_attention_unet/predict.py \
   --output_mask /path/to/output.nii \
   --model_path /path/to/trained/model.h5
 ```
+
+### 9. Results Analysis Scripts (`results_analysis/`)
+Collection of scripts for analyzing segmentation results and performing statistical analyses.
+
+#### 9.1 Merge Participants Volumes (`1_merge_participants_volumes.py`)
+Combines participant information with volume measurements from segmentation models.
+
+**Features**:
+- Merges participant metadata with volume measurements
+- Creates baseline and longitudinal datasets
+- Handles both U-Net and SAMSEG outputs
+
+**Usage**:
+```bash
+python 1_merge_participants_volumes.py \
+  -p /path/to/participants.tsv \
+  -v /path/to/volumes.tsv \
+  -o /path/to/output_dir
+```
+
+#### 9.2 Ordinary Least Squares Analysis (`2_ols.py`)
+Performs OLS regression analysis on brain volume data.
+
+**Features**:
+- Statistical analysis of volume changes
+- Generates regression plots and statistics
+- Outputs comprehensive statistical reports
+
+**Usage**:
+```bash
+python 2_ols.py \
+  -i /path/to/participants_baseline.tsv \
+  -o /path/to/output_dir
+```
+
+#### 9.3 Longitudinal Analysis (`3_longitudinal_analysis.py`)
+Analyzes longitudinal changes in brain volumes using linear mixed effects models.
+
+**Features**:
+- Linear mixed effects modeling
+- Multiple timepoint analysis
+- Visualization of longitudinal trends
+
+**Usage**:
+```bash
+python 3_longitudinal_analysis.py \
+  -i /path/to/participants.tsv \
+  -o /path/to/output_dir
+```
+
+#### 9.4 Annualized Symmetric Percentage Change (`4_aspc.py`)
+Calculates ASPC between different timepoints for brain volume measurements.
+
+**Features**:
+- Handles multiple input files
+- Compares run1 vs run2 measurements
+- Generates visualizations and statistics
+
+**Usage**:
+```bash
+python 4_aspc.py \
+  -i /path/to/participants1.tsv /path/to/participants2.tsv \
+  -o /path/to/output_dir
+```
+
+#### 9.5 Annual Percentage Change (`5_apc.py`)
+Calculates APC for longitudinal brain volume changes.
+
+**Features**:
+- Single file analysis
+- Distribution plots of APC values
+- Time vs APC scatter plots
+- Summary statistics generation
+
+**Usage**:
+```bash
+python 5_apc.py \
+  -i /path/to/participants.tsv \
+  -o /path/to/output_dir
+```
+
+**Outputs**:
+- APC distribution plots for each volume type
+- Time vs APC scatter plots
+- Detailed results in TSV format
+- Summary statistics
 
 ## Troubleshooting
 

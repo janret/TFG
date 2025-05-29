@@ -74,23 +74,9 @@ def main():
             # Start with volumes
             result = calculate_volumes(mask, datagen.voxel_volume)
             
-            # Extract BIDS identifiers
+            # Extract Label from original path
             path = meta[j]['original_path']
-            parts = path.split(os.sep)
-            
-            # Get subject ID (required)
-            subject = next((p for p in parts if p.startswith('sub-')), None)
-            if subject is None:
-                print(f"Warning: No subject ID found in path {path}")
-                continue
-            result['subject'] = subject
-            
-            # Get session ID (optional)
-            session = next((p for p in parts if p.startswith('ses-')), '')
-            result['session'] = session
-            
-            # Add original path for reference
-            result['filename'] = os.path.basename(path)
+            result['Label'] = os.path.basename(path).replace('_T1w.nii', '')
             
             results.append(result)
             save_prediction(mask, meta[j], args.output_dir)
@@ -99,17 +85,8 @@ def main():
         print("No valid results to save!")
         return
 
-    # Create DataFrame and sort
-    df = pd.DataFrame(results)
-    if 'session' in df.columns and not df['session'].empty:
-        df = df.sort_values(['subject', 'session'])
-    else:
-        df = df.sort_values('subject')
-        
-    # Reorder columns to put identifiers first
-    cols = ['subject', 'session', 'filename']
-    other_cols = [c for c in df.columns if c not in cols]
-    df = df[cols + other_cols]
+    # Create DataFrame and sort by Label
+    df = pd.DataFrame(results).sort_values('Label')
     
     tsv_path = os.path.join(args.output_dir, 'volumes.tsv')
     df.to_csv(tsv_path, sep='\t', index=False)
