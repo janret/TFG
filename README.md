@@ -5,13 +5,19 @@ This repository contains the code for the TFG project, focusing on neuroimaging 
 ## Repository Structure
 ```
 TFG/
-├── simple_u_net/           # U-Net implementation for segmentation
+├── simple_unet/           # Basic U-Net implementation for segmentation
 │   ├── Model.py           # U-Net model architecture
 │   ├── DataLoader.py      # Data loading and preprocessing
 │   ├── train.py          # Training script
 │   ├── test.py           # Testing script
-│   ├── predict.py        # Prediction script
-│   └── best_model.h5     # Pre-trained model weights
+│   └── predict.py        # Prediction script
+├── dual_attention_unet/   # Advanced U-Net with dual attention mechanism
+│   ├── Model.py           # Dual attention U-Net architecture
+│   ├── DataLoader.py      # Data loading and preprocessing
+│   ├── Utils.py          # Utility functions
+│   ├── train.py          # Training script
+│   ├── test.py           # Testing script
+│   └── predict.py        # Prediction script
 ├── create_synthetic_data.py          # Generate synthetic data for training
 ├── from_miriad_to_bids.py           # Convert MIRIAD format to BIDS
 ├── run_samseg_long.py               # Run longitudinal SAMSEG processing
@@ -60,16 +66,19 @@ pip install -r requirements.txt
 ## Required Packages
 
 The project uses several key packages including:
-- TensorFlow (2.13.0)
-- NumPy (1.24.3)
-- Matplotlib (3.7.1)
-- Pandas (2.0.3)
-- Scikit-learn (1.3.0)
-- SimpleITK (2.2.1)
-- Nibabel (5.1.0)
-- SciPy (1.11.2)
+- TensorFlow (2.19.0)
+- PyTorch (2.7.0)
+- NumPy (2.1.3)
+- Matplotlib (3.10.3)
+- Pandas (2.2.3)
+- Scikit-learn (1.6.1)
+- SimpleITK (2.5.0)
+- Nibabel (5.3.2)
+- TorchIO (0.20.8)
+- SciPy (1.15.3)
+- Einops (0.8.1)
 
-For a complete list of dependencies and their versions, see `requirements.txt`.
+Additional dependencies include various utilities for data processing, visualization, and deep learning. For a complete list of dependencies and their versions, see `requirements.txt`.
 
 ## Scripts and Usage
 
@@ -168,29 +177,53 @@ python divide_rawdata.py \
   --target-dir /path/to/rawdata_test
 ```
 
-### 7. U-Net Segmentation Model (`simple_u_net/`)
+### 7. U-Net Segmentation Model (`simple_unet/`)
 Deep learning model for brain MRI segmentation.
 
 **Components**:
 - Model architecture (`Model.py`)
 - Data loading utilities (`DataLoader.py`)
 - Training and evaluation scripts
-- Pre-trained weights
 
 **Usage**:
 ```bash
 # Training
-python simple_u_net/train.py \
+python simple_unet/train.py \
   --data_dir /path/to/training/data \
   --epochs 100 \
   --batch_size 8 \
   --learning_rate 0.001
 
 # Prediction
-python simple_u_net/predict.py \
+python simple_unet/predict.py \
   --input_image /path/to/input.nii \
   --output_mask /path/to/output.nii \
-  --model_path simple_u_net/best_model.h5
+  --model_path simple_unet/best_model.h5
+```
+
+### 8. Dual Attention U-Net Model (`dual_attention_unet/`)
+Advanced U-Net architecture incorporating dual attention mechanisms for improved segmentation accuracy.
+
+**Components**:
+- Enhanced model architecture with attention mechanisms (`Model.py`)
+- Data loading and augmentation utilities (`DataLoader.py`)
+- Utility functions for attention computation and visualization (`Utils.py`)
+- Training and evaluation scripts
+
+**Usage**:
+```bash
+# Training
+python dual_attention_unet/train.py \
+  --data_dir /path/to/training/data \
+  --epochs 100 \
+  --batch_size 8 \
+  --learning_rate 0.001
+
+# Prediction
+python dual_attention_unet/predict.py \
+  --input_image /path/to/input.nii \
+  --output_mask /path/to/output.nii \
+  --model_path /path/to/trained/model.h5
 ```
 
 ## Troubleshooting
