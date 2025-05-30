@@ -18,6 +18,13 @@ TFG/
 │   ├── train.py         # Training script
 │   ├── test.py          # Testing script
 │   └── predict.py       # Prediction script
+├── dual_unet_recalc_templates/  # U-Net with template refinement
+│   ├── Model.py          # U-Net model architecture
+│   ├── DataLoader.py     # Data loading and preprocessing
+│   ├── Utils.py         # Utility functions
+│   ├── train.py         # Training script
+│   ├── test.py          # Testing script
+│   └── predict.py       # Prediction script with template refinement
 ├── dual_attention_unet/   # Advanced U-Net with dual attention mechanism
 │   ├── Model.py           # Dual attention U-Net architecture
 │   ├── DataLoader.py      # Data loading and preprocessing
@@ -259,6 +266,48 @@ python dual_unet/predict.py \
   --input_image /path/to/input.nii \
   --output_mask /path/to/output.nii \
   --model_path /path/to/trained/model.h5
+```
+
+### 8.1. Dual U-Net with Template Recalculation (`dual_unet_recalc_templates/`)
+Enhanced version of the Dual U-Net that iteratively refines subject-specific templates.
+
+**Components**:
+- Model architecture (`Model.py`)
+- Data loading utilities (`DataLoader.py`)
+- Utility functions (`Utils.py`)
+- Training and evaluation scripts
+- Template refinement logic
+
+**Features**:
+- Iterative template refinement using segmentation results
+- Improved longitudinal consistency
+- Support for multiple refinement iterations
+
+**Output Format**:
+- Segmentation masks (.nii.gz format)
+- Volume measurements (volumes.tsv) containing:
+  - Label column (format: sub-XXX_ses-XX_run-X)
+  - Volume measurements (gray_matter_mm3, white_matter_mm3, csf_mm3)
+- Refined subject-specific templates
+
+**Usage**:
+```bash
+# Training
+python dual_unet_recalc_templates/train.py \
+  --data_dir /path/to/training/data \
+  --epochs 100 \
+  --batch_size 8 \
+  --learning_rate 0.001
+
+# Prediction with template refinement
+python dual_unet_recalc_templates/predict.py \
+  --bids_root /path/to/bids/data \
+  --output_dir /path/to/output \
+  --simple_unet_path /path/to/simple_unet.h5 \
+  --dual_unet_path /path/to/dual_unet.h5 \
+  --registered_dir /path/to/templates \
+  --iterations 3 \
+  --save_segmentations
 ```
 
 ### 9. Dual Attention U-Net Model (`dual_attention_unet/`)
