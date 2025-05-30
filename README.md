@@ -272,11 +272,9 @@ python dual_unet/predict.py \
 Enhanced version of the Dual U-Net that iteratively refines subject-specific templates.
 
 **Components**:
-- Model architecture (`Model.py`)
 - Data loading utilities (`DataLoader.py`)
-- Utility functions (`Utils.py`)
-- Training and evaluation scripts
-- Template refinement logic
+- Utility functions (`utils.py`)
+- Prediction script with template refinement (`predict.py`)
 
 **Features**:
 - Iterative template refinement using segmentation results
@@ -292,13 +290,6 @@ Enhanced version of the Dual U-Net that iteratively refines subject-specific tem
 
 **Usage**:
 ```bash
-# Training
-python dual_unet_recalc_templates/train.py \
-  --data_dir /path/to/training/data \
-  --epochs 100 \
-  --batch_size 8 \
-  --learning_rate 0.001
-
 # Prediction with template refinement
 python dual_unet_recalc_templates/predict.py \
   --bids_root /path/to/bids/data \
