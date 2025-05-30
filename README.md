@@ -19,10 +19,8 @@ TFG/
 │   ├── test.py          # Testing script
 │   └── predict.py       # Prediction script
 ├── dual_unet_recalc_templates/  # U-Net with template refinement
-│   ├── Model.py          # U-Net model architecture
 │   ├── DataLoader.py     # Data loading and preprocessing
-│   ├── Utils.py         # Utility functions
-│   ├── train.py         # Training script
+│   ├── utils.py         # Utility functions
 │   ├── test.py          # Testing script
 │   └── predict.py       # Prediction script with template refinement
 ├── dual_attention_unet/   # Advanced U-Net with dual attention mechanism
