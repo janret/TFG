@@ -304,8 +304,15 @@ Advanced U-Net architecture incorporating dual attention mechanisms for improved
 
 **Components**:
 - Enhanced model architecture with attention mechanisms (`Model.py`)
+  - Processes MRI input and template segmentation in parallel pathways
+  - Template pathway processes 4-channel one-hot encoded segmentation masks
+  - Self-attention mechanism to enhance relationships between segmentation classes
+  - Fusion of pathways with attention gates for feature refinement
 - Data loading and augmentation utilities (`DataLoader.py`)
-- Utility functions for attention computation and visualization (`Utils.py`)
+  - Handles longitudinal MRI data and corresponding segmentations
+  - Processes template segmentations into one-hot encoded format
+  - Supports batch processing and data augmentation
+- Utility functions for metrics, loss functions, and evaluation (`Utils.py`)
 - Training and evaluation scripts
 
 **Output Format**:

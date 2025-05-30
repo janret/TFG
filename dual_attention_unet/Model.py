@@ -39,24 +39,15 @@ def decoder_block(input_tensor, skip_features, n_filters, crop_size=((0,0),(0,0)
     return x
 
 def template_processing_block(template_input, n_filters):
-    """Process template input (intensity + segmentation channels)"""
-    # Split intensity and segmentation channels
-    intensity = layers.Lambda(lambda x: x[..., 0:1])(template_input)
-    segmentation = layers.Lambda(lambda x: x[..., 1:])(template_input)
+    """Process template input (4 segmentation channels)"""
+    # Process all segmentation channels together
+    template_feat = conv3d_block(template_input, n_filters)
     
-    # Process intensity channel
-    intensity_feat = conv3d_block(intensity, n_filters // 2)
+    # Add self-attention to enhance feature relationships between different segmentation classes
+    attention_feat = attention_gate(template_feat, template_feat, n_filters)
     
-    # Process segmentation channels
-    seg_feat = conv3d_block(segmentation, n_filters // 2)
-    
-    # Combine features with attention
-    intensity_att = attention_gate(intensity_feat, seg_feat, n_filters // 2)
-    seg_att = attention_gate(seg_feat, intensity_feat, n_filters // 2)
-    
-    # Combine features
-    combined = layers.Concatenate()([intensity_att, seg_att])
-    return conv3d_block(combined, n_filters)
+    # Final processing
+    return conv3d_block(attention_feat, n_filters)
 
 def build_model(input_shape_mri=(120, 120, 94, 1),
                 input_shape_template=(120, 120, 94, 4),

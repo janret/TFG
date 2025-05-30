@@ -110,15 +110,9 @@ class LongitudinalDataGenerator(tf.keras.utils.Sequence):
             mri_data = self.__normalize(mri_data)
             batch_mri[i, ..., 0] = mri_data
             
-            # Load and process template
-            template_data = self.__load_mgz(sample['template_path'])
-            template_data = self.__normalize(template_data)
+            # Load and process template segmentation
             template_seg = self.__load_mgz(sample['template_seg_path'], dtype=np.int32)
-            
-            # Create template input (intensity + segmentation)
-            batch_template[i, ..., 0] = template_data
-            for c in range(1, self.n_classes):
-                batch_template[i, ..., c] = (template_seg == c).astype(np.float32)
+            batch_template[i] = self.__to_onehot(template_seg)
             
             # Load and process target segmentation
             seg_data = self.__load_mgz(sample['seg_path'], dtype=np.int32)
