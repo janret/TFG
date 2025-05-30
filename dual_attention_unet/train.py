@@ -9,10 +9,10 @@ from Utils import combined_loss
 def parse_arguments():
     # Get the directory where the script is located
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    default_model_dir = os.path.join(script_dir, 'models')
+    default_model_dir = os.path.join(script_dir, 'Models')
     
     parser = argparse.ArgumentParser(description='3D UNet training script for longitudinal data')
-    parser.add_argument('--data_dir', type=str, default='/home/jan/synthetic_data',
+    parser.add_argument('--data_dir', type=str,
                       help='Root directory containing synthetic data')
     parser.add_argument('--gpu', type=int, default=-1,
                       help='GPU ID to use (-1 for CPU)')
