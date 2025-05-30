@@ -77,8 +77,7 @@ def main():
         optimizer=optimizer,
         loss=combined_loss,
         metrics=[
-            tf.keras.metrics.OneHotMeanIoU(num_classes=n_classes),
-            'accuracy'
+            tf.keras.metrics.OneHotMeanIoU(num_classes=n_classes)
         ]
     )
 

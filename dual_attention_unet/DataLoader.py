@@ -8,7 +8,7 @@ from scipy.ndimage import zoom
 from Utils import load_mgz_file, preprocess_scan, preprocess_segmentation
 
 class LongitudinalDataGenerator(tf.keras.utils.Sequence):
-    def __init__(self, base_dir, input_shape=(120, 120, 94), batch_size=1, n_classes=4, shuffle=True):
+    def __init__(self, base_dir, input_shape=(120, 120, 94), batch_size=1, n_classes=4, shuffle=True, **kwargs):
         """
         Initialize the data generator.
         
@@ -18,7 +18,9 @@ class LongitudinalDataGenerator(tf.keras.utils.Sequence):
             batch_size: Batch size for training
             n_classes: Number of segmentation classes
             shuffle: Whether to shuffle the data between epochs
+            **kwargs: Additional arguments passed to the parent class
         """
+        super().__init__(**kwargs)
         self.base_dir = base_dir
         self.input_shape = input_shape
         self.batch_size = batch_size
