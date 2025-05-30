@@ -216,7 +216,32 @@ python simple_unet/predict.py \
   --model_path simple_unet/best_model.h5
 ```
 
-### 8. Dual Attention U-Net Model (`dual_attention_unet/`)
+### 8. Dual U-Net Model (`dual_unet/`)
+Alternative U-Net implementation for brain MRI segmentation.
+
+**Components**:
+- Model architecture (`Model.py`)
+- Data loading utilities (`DataLoader.py`)
+- Utility functions (`Utils.py`)
+- Training and evaluation scripts
+
+**Usage**:
+```bash
+# Training
+python dual_unet/train.py \
+  --data_dir /path/to/training/data \
+  --epochs 100 \
+  --batch_size 8 \
+  --learning_rate 0.001
+
+# Prediction
+python dual_unet/predict.py \
+  --input_image /path/to/input.nii \
+  --output_mask /path/to/output.nii \
+  --model_path /path/to/trained/model.h5
+```
+
+### 9. Dual Attention U-Net Model (`dual_attention_unet/`)
 Advanced U-Net architecture incorporating dual attention mechanisms for improved segmentation accuracy.
 
 **Components**:
@@ -241,10 +266,10 @@ python dual_attention_unet/predict.py \
   --model_path /path/to/trained/model.h5
 ```
 
-### 9. Results Analysis Scripts (`results_analysis/`)
+### 10. Results Analysis Scripts (`results_analysis/`)
 Collection of scripts for analyzing segmentation results and performing statistical analyses.
 
-#### 9.1 Merge Participants Volumes (`1_merge_participants_volumes.py`)
+#### 10.1 Merge Participants Volumes (`1_merge_participants_volumes.py`)
 Combines participant information with volume measurements from segmentation models.
 
 **Features**:
@@ -260,7 +285,7 @@ python 1_merge_participants_volumes.py \
   -o /path/to/output_dir
 ```
 
-#### 9.2 Ordinary Least Squares Analysis (`2_ols.py`)
+#### 10.2 Ordinary Least Squares Analysis (`2_ols.py`)
 Performs OLS regression analysis on brain volume data.
 
 **Features**:
@@ -275,7 +300,7 @@ python 2_ols.py \
   -o /path/to/output_dir
 ```
 
-#### 9.3 Longitudinal Analysis (`3_longitudinal_analysis.py`)
+#### 10.3 Longitudinal Analysis (`3_longitudinal_analysis.py`)
 Analyzes longitudinal changes in brain volumes using linear mixed effects models.
 
 **Features**:
@@ -290,7 +315,7 @@ python 3_longitudinal_analysis.py \
   -o /path/to/output_dir
 ```
 
-#### 9.4 Annualized Symmetric Percentage Change (`4_aspc.py`)
+#### 10.4 Annualized Symmetric Percentage Change (`4_aspc.py`)
 Calculates ASPC between different timepoints for brain volume measurements.
 
 **Features**:
@@ -305,7 +330,7 @@ python 4_aspc.py \
   -o /path/to/output_dir
 ```
 
-#### 9.5 Annual Percentage Change (`5_apc.py`)
+#### 10.5 Annual Percentage Change (`5_apc.py`)
 Calculates APC for longitudinal brain volume changes.
 
 **Features**:
