@@ -11,6 +11,13 @@ TFG/
 │   ├── train.py          # Training script
 │   ├── test.py           # Testing script
 │   └── predict.py        # Prediction script
+├── dual_unet/            # Alternative U-Net implementation
+│   ├── Model.py          # U-Net model architecture
+│   ├── DataLoader.py     # Data loading and preprocessing
+│   ├── Utils.py         # Utility functions
+│   ├── train.py         # Training script
+│   ├── test.py          # Testing script
+│   └── predict.py       # Prediction script
 ├── dual_attention_unet/   # Advanced U-Net with dual attention mechanism
 │   ├── Model.py           # Dual attention U-Net architecture
 │   ├── DataLoader.py      # Data loading and preprocessing
@@ -83,6 +90,8 @@ The project uses several key packages including:
 - TorchIO (0.20.8)
 - SciPy (1.15.3)
 - Einops (0.8.1)
+- Seaborn (0.13.2)
+- Statsmodels (0.14.4)
 
 Additional dependencies include various utilities for data processing, visualization, and deep learning. For a complete list of dependencies and their versions, see `requirements.txt`.
 
