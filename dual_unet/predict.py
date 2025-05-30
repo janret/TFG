@@ -74,7 +74,9 @@ def main():
             
             # Calculate volumes
             volumes = calculate_volumes(label_map, voxel_size=loader.voxel_size)
-            volumes['original_path'] = metadata['original_path'][i].numpy().decode('utf-8')
+            original_path = metadata['original_path'][i].numpy().decode('utf-8')
+            # Extract Label from original_path
+            volumes['Label'] = os.path.basename(original_path).replace('_T1w.nii', '')
             results.append(volumes)
             
             # Save segmentation if requested
@@ -86,7 +88,7 @@ def main():
                 )
 
     # Save volumes to TSV
-    df = pd.DataFrame(results).sort_values('original_path')
+    df = pd.DataFrame(results).sort_values('Label')
     tsv_file = os.path.join(args.output_dir, 'volumes.tsv')
     df.to_csv(tsv_file, sep='\t', index=False)
     print(f"\nDone. Results written to {tsv_file}")

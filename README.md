@@ -41,6 +41,27 @@ TFG/
 └── README.md                        # This file
 ```
 
+## Data Flow and File Formats
+
+### Input Data Format
+- Raw data should be in MIRIAD format
+- Can be converted to BIDS format using `from_miriad_to_bids.py`
+- Participant information should be in TSV format with columns:
+  - Label (format: sub-XXX_ses-XX_run-X)
+  - Subject
+  - M/F
+  - Age
+  - Group
+  - time(days) from baseline
+  - time (years) from baseline
+
+### Output Data Format
+All segmentation models (simple_unet, dual_unet, dual_attention_unet) generate:
+- Segmentation masks (.nii.gz or .mgz format)
+- Volume measurements (volumes.tsv) containing:
+  - Label column (format: sub-XXX_ses-XX_run-X)
+  - Volume measurements (gray_matter_mm3, white_matter_mm3, csf_mm3)
+
 ## Prerequisites
 
 ### FreeSurfer
@@ -93,17 +114,23 @@ The project uses several key packages including:
 - Seaborn (0.13.2)
 - Statsmodels (0.14.4)
 
-Additional dependencies include various utilities for data processing, visualization, and deep learning. For a complete list of dependencies and their versions, see `requirements.txt`.
+## Pipeline Components
 
-## Scripts and Usage
+### 1. Data Preparation
 
-### 1. Synthetic Data Generation (`create_synthetic_data.py`)
+#### Converting MIRIAD to BIDS (`from_miriad_to_bids.py`)
+Converts neuroimaging data from MIRIAD format to BIDS format.
+
+**Usage**:
+```bash
+python from_miriad_to_bids.py \
+  --input_dir /path/to/miriad/data \
+  --output_dir /path/to/bids/output \
+  --csv_file /path/to/metadata.csv
+```
+
+#### Synthetic Data Generation (`create_synthetic_data.py`)
 Generate synthetic neuroimaging data for testing and validation.
-
-**Features**:
-- Creates multiple synthetic timepoints from single MRI scans
-- Applies random affine and elastic deformations
-- Supports train/validation/test splitting
 
 **Usage**:
 ```bash
@@ -115,29 +142,10 @@ python create_synthetic_data.py \
   --split
 ```
 
-### 2. MIRIAD to BIDS Conversion (`from_miriad_to_bids.py`)
-Convert neuroimaging data from MIRIAD format to BIDS format.
+### 2. Data Processing
 
-**Features**:
-- Organizes data according to BIDS specification
-- Generates required metadata files
-- Creates longitudinal time information
-
-**Usage**:
-```bash
-python from_miriad_to_bids.py \
-  --input_dir /path/to/miriad/data \
-  --output_dir /path/to/bids/output \
-  --csv_file /path/to/metadata.csv
-```
-
-### 3. Longitudinal Segmentation (`run_samseg_long.py`)
+#### SAMSEG Processing (`run_samseg_long.py`)
 Process longitudinal brain MRI data using FreeSurfer's SAMSEG algorithm.
-
-**Features**:
-- Creates subject-specific templates
-- Runs longitudinal SAMSEG processing
-- Generates volume measurements
 
 **Usage**:
 ```bash
@@ -148,57 +156,10 @@ python run_samseg_long.py \
   --threads 4
 ```
 
-### 4. Participant File Generation (`synthseg_generate_participants_file.py`)
-Generate participant information files combining volumetric and clinical data.
+### 3. Segmentation Models
 
-**Features**:
-- Combines SynthSeg volumetric outputs with clinical metadata
-- Creates baseline datasets for cross-sectional analysis
-- Generates standardized TSV files
-
-**Usage**:
-```bash
-python synthseg_generate_participants_file.py \
-  --rawdata /path/to/bids/rawdata \
-  --derivatives /path/to/synthseg/output
-```
-
-### 5. Temporal Processing Visualization (`visualitza_tps.sh`)
-Visualize temporal processing steps using FreeSurfer's FreeView tool.
-
-**Features**:
-- Interactive visualization of longitudinal scans
-- Side-by-side comparison of timepoints
-- Segmentation overlay support
-
-**Usage**:
-```bash
-./visualitza_tps.sh -d /path/to/subject -t 15
-```
-
-### 6. Data Division (`divide_rawdata.py`)
-Split data into training and test sets.
-
-**Features**:
-- Preserves directory structure
-- Processes metadata files
-- Maintains data organization
-
-**Usage**:
-```bash
-python divide_rawdata.py \
-  --test-subjects-file /path/to/test_subjects.txt \
-  --source-dir /path/to/rawdata \
-  --target-dir /path/to/rawdata_test
-```
-
-### 7. U-Net Segmentation Model (`simple_unet/`)
-Deep learning model for brain MRI segmentation.
-
-**Components**:
-- Model architecture (`Model.py`)
-- Data loading utilities (`DataLoader.py`)
-- Training and evaluation scripts
+#### Simple U-Net (`simple_unet/`)
+Basic U-Net implementation for brain MRI segmentation.
 
 **Usage**:
 ```bash
@@ -213,17 +174,11 @@ python simple_unet/train.py \
 python simple_unet/predict.py \
   --input_image /path/to/input.nii \
   --output_mask /path/to/output.nii \
-  --model_path simple_unet/best_model.h5
+  --model_path /path/to/trained/model.h5
 ```
 
-### 8. Dual U-Net Model (`dual_unet/`)
+#### Dual U-Net (`dual_unet/`)
 Alternative U-Net implementation for brain MRI segmentation.
-
-**Components**:
-- Model architecture (`Model.py`)
-- Data loading utilities (`DataLoader.py`)
-- Utility functions (`Utils.py`)
-- Training and evaluation scripts
 
 **Usage**:
 ```bash
@@ -241,14 +196,8 @@ python dual_unet/predict.py \
   --model_path /path/to/trained/model.h5
 ```
 
-### 9. Dual Attention U-Net Model (`dual_attention_unet/`)
-Advanced U-Net architecture incorporating dual attention mechanisms for improved segmentation accuracy.
-
-**Components**:
-- Enhanced model architecture with attention mechanisms (`Model.py`)
-- Data loading and augmentation utilities (`DataLoader.py`)
-- Utility functions for attention computation and visualization (`Utils.py`)
-- Training and evaluation scripts
+#### Dual Attention U-Net (`dual_attention_unet/`)
+Advanced U-Net architecture with dual attention mechanisms.
 
 **Usage**:
 ```bash
@@ -266,16 +215,18 @@ python dual_attention_unet/predict.py \
   --model_path /path/to/trained/model.h5
 ```
 
-### 10. Results Analysis Scripts (`results_analysis/`)
-Collection of scripts for analyzing segmentation results and performing statistical analyses.
+### 4. Results Analysis
 
-#### 10.1 Merge Participants Volumes (`1_merge_participants_volumes.py`)
+#### Merge Participants Volumes (`results_analysis/1_merge_participants_volumes.py`)
 Combines participant information with volume measurements from segmentation models.
 
-**Features**:
-- Merges participant metadata with volume measurements
-- Creates baseline and longitudinal datasets
-- Handles both U-Net and SAMSEG outputs
+**Input Requirements**:
+- Participants file (TSV):
+  - Label column (format: sub-XXX_ses-XX_run-X)
+  - Demographic and clinical data columns
+- Volumes file (TSV):
+  - Label column (matching format)
+  - Volume measurements (gray_matter_mm3, white_matter_mm3, csf_mm3)
 
 **Usage**:
 ```bash
@@ -285,72 +236,39 @@ python 1_merge_participants_volumes.py \
   -o /path/to/output_dir
 ```
 
-#### 10.2 Ordinary Least Squares Analysis (`2_ols.py`)
-Performs OLS regression analysis on brain volume data.
-
-**Features**:
-- Statistical analysis of volume changes
-- Generates regression plots and statistics
-- Outputs comprehensive statistical reports
-
-**Usage**:
-```bash
-python 2_ols.py \
-  -i /path/to/participants_baseline.tsv \
-  -o /path/to/output_dir
-```
-
-#### 10.3 Longitudinal Analysis (`3_longitudinal_analysis.py`)
-Analyzes longitudinal changes in brain volumes using linear mixed effects models.
-
-**Features**:
-- Linear mixed effects modeling
-- Multiple timepoint analysis
-- Visualization of longitudinal trends
-
-**Usage**:
-```bash
-python 3_longitudinal_analysis.py \
-  -i /path/to/participants.tsv \
-  -o /path/to/output_dir
-```
-
-#### 10.4 Annualized Symmetric Percentage Change (`4_aspc.py`)
-Calculates ASPC between different timepoints for brain volume measurements.
-
-**Features**:
-- Handles multiple input files
-- Compares run1 vs run2 measurements
-- Generates visualizations and statistics
-
-**Usage**:
-```bash
-python 4_aspc.py \
-  -i /path/to/participants1.tsv /path/to/participants2.tsv \
-  -o /path/to/output_dir
-```
-
-#### 10.5 Annual Percentage Change (`5_apc.py`)
-Calculates APC for longitudinal brain volume changes.
-
-**Features**:
-- Single file analysis
-- Distribution plots of APC values
-- Time vs APC scatter plots
-- Summary statistics generation
-
-**Usage**:
-```bash
-python 5_apc.py \
-  -i /path/to/participants.tsv \
-  -o /path/to/output_dir
-```
-
 **Outputs**:
-- APC distribution plots for each volume type
-- Time vs APC scatter plots
-- Detailed results in TSV format
-- Summary statistics
+- `participants.tsv`: Complete dataset with volumes and metadata
+- `participants_baseline.tsv`: Filtered dataset with baseline timepoints
+
+#### Statistical Analysis Scripts
+
+1. **Ordinary Least Squares (`2_ols.py`)**
+   ```bash
+   python 2_ols.py \
+     -i /path/to/participants_baseline.tsv \
+     -o /path/to/output_dir
+   ```
+
+2. **Longitudinal Analysis (`3_longitudinal_analysis.py`)**
+   ```bash
+   python 3_longitudinal_analysis.py \
+     -i /path/to/participants.tsv \
+     -o /path/to/output_dir
+   ```
+
+3. **ASPC Analysis (`4_aspc.py`)**
+   ```bash
+   python 4_aspc.py \
+     -i /path/to/participants1.tsv /path/to/participants2.tsv \
+     -o /path/to/output_dir
+   ```
+
+4. **APC Analysis (`5_apc.py`)**
+   ```bash
+   python 5_apc.py \
+     -i /path/to/participants.tsv \
+     -o /path/to/output_dir
+   ```
 
 ## Troubleshooting
 
