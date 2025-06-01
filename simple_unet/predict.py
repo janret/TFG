@@ -23,7 +23,7 @@ def save_prediction(pred_mask, meta, output_dir):
     outpath = os.path.join(
         output_dir,
         *bids,
-        os.path.basename(original).replace('_T1w.nii', '_seg.nii.gz')
+        os.path.basename(original).replace('_T1w.nii', '_dseg.nii')
     )
     os.makedirs(os.path.dirname(outpath), exist_ok=True)
     nib.save(

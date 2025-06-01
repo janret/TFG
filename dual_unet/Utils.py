@@ -140,14 +140,14 @@ def save_segmentation(label_mask, reference_img_path, output_dir):
     timepoint = os.path.basename(reference_img_path).replace('.mgz', '')
     
     # Create output filename and directory
-    output_filename = f"{timepoint}_seg_hybrid.mgz"
+    output_filename = f"{timepoint}_dseg.nii"
     save_dir = os.path.join(output_dir, subject_id)
     os.makedirs(save_dir, exist_ok=True)
     
     # Save segmented image
     out_path = os.path.join(save_dir, output_filename)
     ref_img = nib.load(reference_img_path)
-    seg_img = nib.MGZImage(label_mask.astype(np.int16), ref_img.affine, ref_img.header)
+    seg_img = nib.Nifti1Image(label_mask.astype(np.int16), ref_img.affine, ref_img.header)
     nib.save(seg_img, out_path)
     
     return out_path 

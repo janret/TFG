@@ -35,14 +35,12 @@ def save_segmentation(label_mask, affine, original_path, output_dir):
     parts = original_path.split(os.sep)
     bids_parts = [p for p in parts if p.startswith(('sub-', 'ses-'))]
     
-    # Handle file extension - convert .mgz to .nii.gz for output
+    # Handle file extension - convert .mgz to .nii for output
     filename = os.path.basename(original_path)
     if '.mgz' in filename:
-        filename = filename.replace('.mgz', '_seg.nii.gz')
+        filename = filename.replace('.mgz', '_dseg.nii')
     else:
-        filename = filename.replace('.nii', '_seg.nii').replace('.gz', '')
-        if not filename.endswith('.gz'):
-            filename += '.gz'
+        filename = filename.replace('.nii', '_seg.nii')
     
     # Create directory if it doesn't exist
     save_dir = os.path.join(output_dir, *bids_parts)

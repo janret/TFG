@@ -11,19 +11,19 @@ TFG/
 │   ├── train.py          # Training script
 │   ├── test.py           # Testing script
 │   └── predict.py        # Prediction script
-├── dual_unet/            # Alternative U-Net implementation
+├── dual_unet/            # Dual Input U-Net implementation
 │   ├── Model.py          # U-Net model architecture
 │   ├── DataLoader.py     # Data loading and preprocessing
 │   ├── Utils.py         # Utility functions
 │   ├── train.py         # Training script
 │   ├── test.py          # Testing script
 │   └── predict.py       # Prediction script
-├── dual_unet_recalc_templates/  # U-Net with template refinement
+├── dual_unet_recalc_templates/  # Dual Input U-Net with template refinement
 │   ├── DataLoader.py     # Data loading and preprocessing
 │   ├── utils.py         # Utility functions
 │   ├── test.py          # Testing script
 │   └── predict.py       # Prediction script with template refinement
-├── dual_attention_unet/   # Advanced U-Net with dual attention mechanism
+├── dual_attention_unet/   # Advanced U-Net with attention mechanism
 │   ├── Model.py           # Dual attention U-Net architecture
 │   ├── DataLoader.py      # Data loading and preprocessing
 │   ├── Utils.py          # Utility functions
@@ -39,9 +39,9 @@ TFG/
 ├── create_synthetic_data.py          # Generate synthetic data for training
 ├── from_miriad_to_bids.py           # Convert MIRIAD format to BIDS
 ├── run_samseg_long.py               # Run longitudinal SAMSEG processing
-├── synthseg_generate_participants_file.py  # Generate participant information
-├── visualitza_tps.sh                # Visualize temporal processing steps
-├── divide_rawdata.py                # Split data into train/test sets
+├── synthseg_generate_participants_file.py  # Generate participant information after synthseg execution
+├── visualitza_tps.sh                # Visualize synthetic data subject timepoints
+├── divide_rawdata.py                # Split data into train/val/test sets
 ├── requirements.txt                 # Python dependencies
 └── README.md                        # This file
 ```
@@ -103,7 +103,7 @@ Additional dependencies include various utilities for data processing, visualiza
 ## Scripts and Usage
 
 ### 1. Synthetic Data Generation (`create_synthetic_data.py`)
-Generate synthetic neuroimaging data for testing and validation.
+Generate synthetic neuroimaging data for trainig and validation.
 
 **Features**:
 - Creates multiple synthetic timepoints from single MRI scans
@@ -124,7 +124,7 @@ python create_synthetic_data.py \
 Convert neuroimaging data from MIRIAD format to BIDS format.
 
 **Features**:
-- Organizes data according to BIDS specification
+- Organizes data according to BIDS standard
 - Generates required metadata files
 - Creates longitudinal time information
 - Expects participant information in TSV format with columns:
@@ -177,7 +177,7 @@ python synthseg_generate_participants_file.py \
 ```
 
 ### 5. Temporal Processing Visualization (`visualitza_tps.sh`)
-Visualize temporal processing steps using FreeSurfer's FreeView tool.
+Visualize  synthetic data subject timepoints using FreeSurfer's FreeView tool.
 
 **Features**:
 - Interactive visualization of longitudinal scans
@@ -190,7 +190,7 @@ Visualize temporal processing steps using FreeSurfer's FreeView tool.
 ```
 
 ### 6. Data Division (`divide_rawdata.py`)
-Split data into training and test sets.
+Split data into training, validation and test sets.
 
 **Features**:
 - Preserves directory structure
@@ -214,7 +214,7 @@ Deep learning model for brain MRI segmentation.
 - Training and evaluation scripts
 
 **Output Format**:
-- Segmentation masks (.nii.gz format)
+- Segmentation masks (.nii format)
 - Volume measurements (volumes.tsv) containing:
   - Label column (format: sub-XXX_ses-XX_run-X)
   - Volume measurements (gray_matter_mm3, white_matter_mm3, csf_mm3)
@@ -245,7 +245,7 @@ Alternative U-Net implementation for brain MRI segmentation.
 - Training and evaluation scripts
 
 **Output Format**:
-- Segmentation masks (.nii.gz format)
+- Segmentation masks (.nii format)
 - Volume measurements (volumes.tsv) containing:
   - Label column (format: sub-XXX_ses-XX_run-X)
   - Volume measurements (gray_matter_mm3, white_matter_mm3, csf_mm3)
@@ -280,7 +280,7 @@ Enhanced version of the Dual U-Net that iteratively refines subject-specific tem
 - Support for multiple refinement iterations
 
 **Output Format**:
-- Segmentation masks (.nii.gz format)
+- Segmentation masks (.nii format)
 - Volume measurements (volumes.tsv) containing:
   - Label column (format: sub-XXX_ses-XX_run-X)
   - Volume measurements (gray_matter_mm3, white_matter_mm3, csf_mm3)
@@ -300,7 +300,7 @@ python dual_unet_recalc_templates/predict.py \
 ```
 
 ### 9. Dual Attention U-Net Model (`dual_attention_unet/`)
-Advanced U-Net architecture incorporating dual attention mechanisms for improved segmentation accuracy.
+Advanced U-Net architecture incorporating attention mechanisms for improved segmentation accuracy.
 
 **Components**:
 - Enhanced model architecture with attention mechanisms (`Model.py`)
@@ -316,7 +316,7 @@ Advanced U-Net architecture incorporating dual attention mechanisms for improved
 - Training and evaluation scripts
 
 **Output Format**:
-- Segmentation masks (.mgz format)
+- Segmentation masks (.nii format)
 - Volume measurements (volumes.tsv) containing:
   - Label column (format: sub-XXX_ses-XX_run-X)
   - Volume measurements (gray_matter_mm3, white_matter_mm3, csf_mm3)
